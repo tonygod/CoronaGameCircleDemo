@@ -48,17 +48,12 @@ settings =
     {
         titleText =
         {
-            default = "Apple Game Center",
+            default = "Corona Amazon GameCircle Sample",
         },
     },
     
     plugins =
     {
-        --        ["CoronaProvider.gameNetwork.apple"] =
-        --        {
-        --            publisherId = "com.coronalabs",
-        --            supportedPlatforms = { iphone=true },
-        --        },
         ["plugin.gamecircle"] =
         {
             -- required

@@ -1,6 +1,5 @@
 
 local composer = require( "composer" )
---local gameNetwork = require( "gameNetwork" )
 local gamecircle = require( "plugin.gamecircle" )
 local widget = require( "widget" )
 
@@ -30,22 +29,6 @@ local function handleRadio( event )
 end
 
 
--- Game Center request listener function
-local function requestCallback( event )
-    
-    if ( event.data ) then
-        
-        -- Event type of "setHighScore"
-        if ( event.type == "setHighScore" ) then
-            native.showAlert( "Result", event.data.value..' submitted to\n"'..composer.getVariable( "currentLeaderboardTitle" )..'" leaderboard.', { "OK" } )
-        end
-    end
-    
-    local printTable = composer.getVariable( "printTable" )
-    printTable( event )
-end
-
-
 -- Button handler function
 local function handleButton( event )
     
@@ -53,18 +36,11 @@ local function handleButton( event )
     
     -- Show leaderboard panel
     if ( target.id == "showLeaderboard" ) then
---        gameNetwork.show( "leaderboards", { leaderboard={ category=composer.getVariable( "currentLeaderboardID" ) } } )
         gamecircle.Leaderboard.OpenOverlay( composer.getVariable( "currentLeaderboardID" ) )  
         
         
 	-- Submit high score
     elseif ( target.id == "submitScore" ) then
---        gameNetwork.request( "setHighScore",
---        {
---            localPlayerScore = { category=composer.getVariable( "currentLeaderboardID" ), value=composer.getVariable( "currentScore" ) },
---            listener = requestCallback
---        }
---        )
         local leaderboardId = composer.getVariable( "currentLeaderboardID" )
         gamecircle.Leaderboard.SubmitScore( leaderboardId, composer.getVariable( "currentScore" ) )
         

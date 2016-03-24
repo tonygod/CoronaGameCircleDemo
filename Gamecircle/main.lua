@@ -85,87 +85,6 @@ end
 composer.setVariable( "printTable", printTable )
 
 
--- Game Center request listener function
-local function requestCallback( event )
-    
-    if ( event.data ) then
-        
-        -- Event type of "loadLocalPlayer"
-        if ( event.type == "loadLocalPlayer" ) then
-            
-            if ( aliasGroup.numChildren == 0 ) then
-                -- Save player data to variable
-                composer.setVariable( "localPlayerData", event.data )
-                -- Display local player alias
-                local textGroup = display.newGroup()
-                aliasGroup:insert( textGroup )
-                composer.stage:insert( aliasGroup )
-                textGroup.anchorChildren = true
-                local back = display.newRect( aliasGroup, 0, 0, display.actualContentWidth, 34 )
-                back:setFillColor( 0.5,0.5,0.5,0.15 )
-                local alias = display.newText( textGroup, "Game Center Alias: ", 0, back.y, sampleUI.appFont, 14 )
-                alias:setFillColor( 0.5 )
-                alias.anchorX = 1
-                local name = display.newText( textGroup, event.data.alias, alias.x, back.y, sampleUI.appFont, 14 )
-                name:setFillColor( 0.7 )
-                name.anchorX = 0
-                aliasGroup.x = display.contentCenterX
-                aliasGroup.y = titleBarBottom + 36 - (aliasGroup.height*0.5)
-                transition.to( aliasGroup, { time=800, y=aliasGroup.y+aliasGroup.height, transition=easing.outQuad } )
-            end
-            
-            -- Event type of "loadLeaderboardCategories"
-        elseif ( event.type == "loadLeaderboardCategories" ) then
-            
-            if ( #event.data > 0 ) then
-                -- Store leaderboard categories in table
-                local ld = composer.getVariable( "leaderboardsData" )
-                for i = 1,#event.data do
-                    ld[#ld+1] = { category=event.data[i].category, title=event.data[i].title }
-                end
-                -- Show leaderboards scene
-                composer.gotoScene( "leaderboards", { effect="slideUp", time=800 } )
-            else
-                native.showAlert( "Error", "Error in requesting app leaderboards.", { "OK" } )
-            end
-            
-            -- Event type of "loadAchievementDescriptions" (loads all achievements for the app)
-        elseif ( event.type == "loadAchievementDescriptions" ) then
-            
-            if ( #event.data > 0 ) then
-                -- Store achievement descriptions
-                local ad = composer.getVariable( "achievementData" )
-                for i = 1,#event.data do
-                    ad[#ad+1] = { identifier=event.data[i].identifier, title=event.data[i].title, isHidden=event.data[i].isHidden, maximumPoints=event.data[i].maximumPoints, percentComplete=0 }
-                end
-            else
-                native.showAlert( "Error", "Error in requesting app achievements.", { "OK" } )
-            end
-            
-            -- Event type of "loadAchievements" (loads achievement percentages for current player)
-        elseif ( event.type == "loadAchievements" ) then
-            
-            if ( #event.data > 0 ) then
-                -- Update achievement percentages
-                local ad = composer.getVariable( "achievementData" )
-                for i = 1,#ad do
-                    for j = 1,#event.data do
-                        if ( ad[i].identifier == event.data[j].identifier ) then
-                            ad[i].percentComplete = event.data[j].percentComplete
-                        end
-                    end
-                end
-            else
-                native.showAlert( "Error", "Error in requesting achievements for current player.", { "OK" } )
-            end
-        end
-    end
-    
-    local printTable = composer.getVariable( "printTable" )
-    printTable( event )
-end
-
-
 function LeaderboardCallback(returnValue)
     if returnValue.isError == true then
         print("Get Leaderboards request returned with error message: " .. returnValue.errorMessage)
@@ -174,20 +93,20 @@ function LeaderboardCallback(returnValue)
         print("-num" .. returnValue.num)
         local ld = composer.getVariable( "leaderboardsData" )
         for i, leaderboard in ipairs(returnValue) do
+--            print("-Leaderboard ID" .. leaderboard.id)
+--            print("--name" .. leaderboard.name)
+--            print("--displayText" .. leaderboard.displayText)
+--            print("--scoreFormat" .. leaderboard.scoreFormat)
+--            print("--imageURL" .. leaderboard.imageURL)
+--            print("--imageURL may be blank, as warned by Amazon's SDK documentation, when propegated outside basic GetLeaderboards function")
             ld[#ld+1] = {
                 category=leaderboard.displayText,
                 title=leaderboard.name,
                 id = leaderboard.id
             }
-            -- Show leaderboards scene
-            composer.gotoScene( "leaderboards", { effect="slideUp", time=800 } )
-            --            print("-Leaderboard ID" .. leaderboard.id)
-            --            print("--name" .. leaderboard.name)
-            --            print("--displayText" .. leaderboard.displayText)
-            --            print("--scoreFormat" .. leaderboard.scoreFormat)
-            --            print("--imageURL" .. leaderboard.imageURL)
-            --            print("--imageURL may be blank, as warned by Amazon's SDK documentation, when propegated outside basic GetLeaderboards function")
         end
+        -- Show leaderboards scene
+        composer.gotoScene( "leaderboards", { effect="slideUp", time=800 } )
     end
     local printTable = composer.getVariable( "printTable" )
     printTable( returnValue )
@@ -201,6 +120,17 @@ function AchievementCallback(returnValue)
         print("Achievement information recieved!")
         local ad = composer.getVariable( "achievementData" )
         for i, achievement in ipairs(returnValue) do
+--            print("-Achievement # " .. i)  
+--            print("--id: " .. achievement.id)  
+--            print("--title: " .. achievement.title)  
+--            print("--desc: " .. achievement.desc)  
+--            print("--isUnlocked: " .. achievement.isUnlocked)  
+--            print("--unlockedDate: " .. achievement.unlockDate)  
+--            print("--imageURL: " .. achievement.imageURL)  
+--            print("--isHidden: " .. achievement.isHidden)  
+--            print("--pointValue: " .. achievement.pointValue)  
+--            print("--position: " .. achievement.position)  
+--            print("--progress: " .. achievement.progress)
             ad[#ad+1] = {
                 identifier=achievement.id,
                 title=achievement.title,
@@ -230,7 +160,7 @@ function PlayerProfileCallback(returnValue)
             textGroup.anchorChildren = true
             local back = display.newRect( aliasGroup, 0, 0, display.actualContentWidth, 34 )
             back:setFillColor( 0.5,0.5,0.5,0.15 )
-            local alias = display.newText( textGroup, "Game Center Alias: ", 0, back.y, sampleUI.appFont, 14 )
+            local alias = display.newText( textGroup, "GameCircle Alias: ", 0, back.y, sampleUI.appFont, 14 )
             alias:setFillColor( 0.5 )
             alias.anchorX = 1
             local name = display.newText( textGroup, returnValue.player.alias, alias.x, back.y, sampleUI.appFont, 14 )
@@ -313,21 +243,16 @@ local function initCallback( result )
             composer.setVariable( "initializedGC", true )
             
             -- Request local player information
-            --            gameNetwork.request( "loadLocalPlayer", { listener=requestCallback } )
             gamecircle.GetLocalPlayerProfile( PlayerProfileCallback )
             
             -- Load leaderboard categories
-            --            gameNetwork.request( "loadLeaderboardCategories", { listener=requestCallback } )
             gamecircle.Leaderboard.GetLeaderboards( LeaderboardCallback )
             
             -- Load achievement descriptions
-            --            gameNetwork.request( "loadAchievementDescriptions", { listener=requestCallback } )
             gamecircle.Achievement.GetAchievements( AchievementCallback )
-            
-            -- Load player achievements
-            --            gameNetwork.request( "loadAchievements", { listener=requestCallback } )
+        
         else
-            -- Display alert that Game Center cannot be initialized
+            -- Display alert that GameCircle cannot be initialized
             native.showAlert( "Error", "Player is not signed into GameCircle", { "OK" } )
         end
         
@@ -355,7 +280,7 @@ local function checkGamecircleState()
 end
 
 
--- Initialize Game Center if platform is an iOS device
+-- Initialize GameCircle if platform is an Amazon device
 if ( system.getInfo( "targetAppStore" ) == "amazon" ) then
     gamecircle.Init( true, true, true )
 --    gamecircle.SetSignedInListener( initCallback ) -- CRASHES

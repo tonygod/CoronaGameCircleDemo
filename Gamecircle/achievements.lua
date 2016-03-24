@@ -51,34 +51,6 @@ local function alignSliders( action )
 end
 
 
--- Game Center request listener function
-local function requestCallback( event )
-    
-    -- Event type of "resetAchievements"
-    if ( event.type == "resetAchievements" ) then
-        local ad = composer.getVariable( "achievementData" )
-        for i = 1,#ad do
-            if ( ad[i].isHidden == false ) then
-                ad[i].percentComplete = 0
-            end
-        end
-        alignSliders( "reset" )
-        native.showAlert( "Result", "All achievements reset.", { "OK" } )
-        
-	-- Event type of "unlockAchievement"
-    elseif ( event.type == "unlockAchievement" ) then
-	
-        achievementsSet[1] = achievementsSet[1]+1
-        if ( achievementsSet[1] == achievementsSet[2] ) then
-            native.showAlert( "Result", "Progress values set.", { "OK" } )
-        end
-    end
-    
-    local printTable = composer.getVariable( "printTable" )
-    printTable( event )
-end
-
-
 -- Button handler function
 local function handleButton( event )
     
@@ -96,23 +68,12 @@ local function handleButton( event )
         local ad = composer.getVariable( "achievementData" )
         for i = 1,#ad do
             if ( ad[i].isHidden == false ) then
---                gameNetwork.request( "unlockAchievement",
---                    {
---                        achievement = {
---                            identifier = ad[i].identifier,
---                            percentComplete = ad[i].percentComplete,
---                            showsCompletionBanner = false
---                        },
---                        listener = requestCallback
---                    }
---                )
                 gamecircle.Achievement.UpdateAchievement( ad[i].identifier, ad[i].percentComplete )
             end
         end
         
 	-- Reset achievements
     elseif ( target.id == "resetAll" ) then
---        gameNetwork.request( "resetAchievements", { listener=requestCallback } )
         native.showAlert( "Reset Achievements", "Resetting achievements is not supported on Amazon GameCircle", { "OK" } )
         
     end
