@@ -1,0 +1,69 @@
+--
+-- For more information on build.settings see the Corona SDK Build Guide at:
+-- http://docs.coronalabs.com/guide/distribution/buildSettings/index.html
+--
+
+settings =
+{
+    build =
+    {
+        neverStripDebugInfo = true
+    },
+    
+    orientation =
+    {
+        default = "portrait",
+        supported = { "portrait", "portraitUpsideDown" }
+    },
+    
+    iphone =
+    {
+        plist =
+        {
+            CFBundleIconFiles = {
+                "Icon.png",
+                "Icon@2x.png",
+                "Icon-60.png",
+                "Icon-60@2x.png",
+                "Icon-60@3x.png",
+                "Icon-72.png",
+                "Icon-72@2x.png",
+                "Icon-76.png",
+                "Icon-76@2x.png",
+                "Icon-167.png",
+                "Icon-Small-40.png",
+                "Icon-Small-40@2x.png",
+                "Icon-Small-40@3x.png",
+                "Icon-Small-50.png",
+                "Icon-Small-50@2x.png",
+                "Icon-Small.png",
+                "Icon-Small@2x.png",
+                "Icon-Small@3x.png"
+            },
+            CFBundleIdentifier = "com.appledts.GKTapper"  -- Apple's Game Center test bed
+        }
+    },
+    
+    window =
+    {
+        titleText =
+        {
+            default = "Apple Game Center",
+        },
+    },
+    
+    plugins =
+    {
+        --        ["CoronaProvider.gameNetwork.apple"] =
+        --        {
+        --            publisherId = "com.coronalabs",
+        --            supportedPlatforms = { iphone=true },
+        --        },
+        ["plugin.gamecircle"] =
+        {
+            -- required
+            publisherId = "COM_INNOVATIVELEISURE",
+            supportedPlatforms = { ["android-kindle"] = true },
+        },        
+    },
+}
